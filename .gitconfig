@@ -1,0 +1,11 @@
+[user]
+	email = thyrc@gmx.net
+	name = thyrc
+[push]
+	default = simple
+[alias]
+	co = checkout
+	br = branch
+	ci = commit
+	st = status
+	unstage = reset HEAD --
