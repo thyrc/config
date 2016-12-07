@@ -1,0 +1,9 @@
+alias ls='ls --color=auto'
+alias grep='grep --color=auto'
+
+alias ll='ls -lap'
+alias grepr='grep -r --exclude-dir=.svn'
+
+alias nscp='scp -o "StrictHostKeyChecking=no" -o "UserKnownHostsFile=/dev/null" -o "LogLevel=QUIET"'
+alias nssh='ssh -o "StrictHostKeyChecking=no" -o "UserKnownHostsFile=/dev/null" -o "LogLevel=QUIET"'
+alias assh='ssh -o "Ciphers=blowfish-cbc" -o "MACs=hmac-sha1" -o "KexAlgorithms=diffie-hellman-group1-sha1" -l admin'
