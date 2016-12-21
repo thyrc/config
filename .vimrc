@@ -99,7 +99,6 @@ function! SyntasticToggle()
             let g:syntastic_c_checkers = ['']
             SyntasticReset
         endif
-
     elseif &ft == 'sh'
         if g:syntastic_sh_checkers == ['shellcheck']
             SyntasticReset
