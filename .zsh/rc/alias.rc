@@ -1,7 +1,7 @@
 alias ls='ls --color=auto'
 alias grep='grep --color=auto'
 
-alias ll='ls -lap'
+alias ll='ls -lapv'
 alias grepr='grep -r --exclude-dir=.svn'
 
 alias nscp='scp -o "StrictHostKeyChecking=no" -o "UserKnownHostsFile=/dev/null" -o "LogLevel=QUIET"'
