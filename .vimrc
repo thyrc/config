@@ -74,8 +74,10 @@ let g:syntastic_auto_loc_list = 1
 let g:syntastic_check_on_open = 1
 let g:syntastic_check_on_wq = 0
 
-let g:syntastic_sh_checkers = ['sh']
+let g:syntastic_asm_checkers = ['nasm']
 let g:syntastic_c_checkers = ['']
+let g:syntastic_sh_checkers = ['sh']
+let g:syntastic_rust_checkers = ['']
 
 " syntastic checker toggle
 noremap <silent><F5> :call SyntasticToggle()<CR>
@@ -90,6 +92,14 @@ function! SyntasticToggle()
             let g:syntastic_enable_perl_checker = 1
             let g:syntastic_perl_checkers = ['perl']
             SyntasticCheck
+        endif
+    elseif &ft == 'rust'
+        if g:syntastic_rust_checkers == ['']
+            let g:syntastic_rust_checkers = ['rustc']
+            SyntasticCheck
+        else
+            let g:syntastic_rust_checkers = ['']
+            SyntasticReset
         endif
     elseif &ft == 'c'
         if g:syntastic_c_checkers == ['']
