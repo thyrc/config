@@ -21,7 +21,7 @@ set pastetoggle=<F12>
 set nobackup
 set swapfile
 
-nmap <C-L> :nohl<CR>
+nmap <C-L> :nohl <bar> :syn clear Repeat<CR>
 
 set background=dark
 highlight LineNr term=bold cterm=NONE ctermfg=DarkGrey ctermbg=DarkBlue gui=NONE guifg=DarkGrey guibg=NONE
@@ -144,3 +144,24 @@ nnoremap <silent> <Leader>ml :call AppendModeline()<CR>
 if filereadable(expand("~/.vim/vimrc.local"))
     source ~/.vim/vimrc.local
 endif
+
+noremap <silent><F6> :HighlightRepeats<CR>
+function! HighlightRepeats() range
+    let lineCounts = {}
+    let lineNum = a:firstline
+    while lineNum <= a:lastline
+        let lineText = getline(lineNum)
+        if lineText != ""
+            let lineCounts[lineText] = (has_key(lineCounts, lineText) ? lineCounts[lineText] : 0) + 1
+        endif
+        let lineNum = lineNum + 1
+    endwhile
+    exe 'syn clear Repeat'
+    for lineText in keys(lineCounts)
+        if lineCounts[lineText] >= 2
+            exe 'syn match Repeat "^' . escape(lineText, '".\^$*[]') . '$"'
+        endif
+    endfor
+endfunction
+
+command! -range=% HighlightRepeats <line1>,<line2>call HighlightRepeats()
