@@ -1,6 +1,9 @@
 set incsearch
 set hlsearch
-set wildmode=longest,list
+
+"" enhanced command-line completion
+set wildmenu
+set wildmode=longest,list:longest,list:full
 
 set tabstop=4
 set shiftwidth=4
@@ -20,6 +23,16 @@ set pastetoggle=<F12>
 
 set nobackup
 set swapfile
+
+"" netrw
+" disable generation of .netrwhist
+let g:netrw_dirhistmax = 0
+" tree style listing
+let g:netrw_liststyle = 3
+
+"" split window
+set splitright
+set splitbelow
 
 nmap <C-L> :nohl <bar> :syn clear Repeat<CR>
 
@@ -181,6 +194,23 @@ function! HighlightRepeats() range
 endfunction
 
 command! -range=% HighlightRepeats <line1>,<line2>call HighlightRepeats()
+
+"" spell
+set sps=best,10
+let spelllangs = ["en", "de"]
+function! SpellToggle()
+    if !exists('b:langidx') | let b:langidx = 0 | endif
+    if b:langidx == len(g:spelllangs)
+        setlocal nospell
+        echo "nospell"
+        let b:langidx = 0
+    else
+        let &l:spelllang=g:spelllangs[b:langidx]
+        setlocal spell
+        echo "spell: " . &spelllang
+        let b:langidx = (b:langidx+1)
+    endif
+endfunction
 
 if filereadable(expand("~/.vim/vimrc.local"))
     source ~/.vim/vimrc.local
