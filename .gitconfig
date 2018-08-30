@@ -9,3 +9,5 @@
 	ci = commit
 	st = status
 	unstage = reset HEAD --
+[include]
+    path = ~/.gitconfig.local
