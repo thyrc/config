@@ -2,7 +2,7 @@ alias ls='ls --color=auto'
 alias grep='grep --color=auto'
 
 alias ll='ls -lapv'
-alias grepr='grep -r --exclude-dir=.svn'
+alias grepr='grep -r --exclude-dir=.svn --exclude-dir=.git'
 
 alias nscp='scp -o "StrictHostKeyChecking=no" -o "UserKnownHostsFile=/dev/null" -o "LogLevel=QUIET"'
 alias nssh='ssh -o "StrictHostKeyChecking=no" -o "UserKnownHostsFile=/dev/null" -o "LogLevel=QUIET"'
