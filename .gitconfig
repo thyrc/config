@@ -1,13 +1,27 @@
 [user]
 	email = thyrc@users.noreply.github.com
 	name = thyrc
+
 [push]
 	default = simple
+
 [alias]
 	co = checkout
 	br = branch
 	ci = commit
 	st = status
 	unstage = reset HEAD --
+
+[core]
+    pager = cat
+
+[merge]
+    tool = vimdiff
+    conflictstyle = diff3
+
+[mergetool]
+    prompt = false
+    keepBackup = false
+
 [include]
     path = ~/.gitconfig.local
