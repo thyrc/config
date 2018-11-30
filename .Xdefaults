@@ -1,0 +1,23 @@
+URxvt.font: xft:Nimbus Mono:pixelsize=12
+URxvt.letterSpace: -1
+
+URxvt.background: #000000
+URxvt.foreground: #BBAAEE
+
+URxvt.keysym.Home: \033[1~
+URxvt.keysym.End: \033[4~
+URxvt.keysym.KP_Home: \033[1~
+URxvt.keysym.KP_End:  \033[4~
+
+URxvt.geometry: 148x42
+
+! do not scroll with output
+URxvt*scrollTtyOutput: false
+
+! scroll in relation to buffer (with mouse scroll or Shift+Page Up)
+URxvt*scrollWithBuffer: true
+
+! scroll back to the bottom on keypress
+URxvt*scrollTtyKeypress: true
+
+URxvt*scrollBar: false
