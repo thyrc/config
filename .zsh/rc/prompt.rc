@@ -24,6 +24,6 @@ case $TERM in
         ;;
 esac
 
-if [[ "$PANTS" != "ON" ]]; then
-    PS1="%B%F{green}%n@%m%k %B%F{blue}%~ %# %b%f%k"
-fi
+# if [[ "$PANTS" != "ON" ]]; then
+#     PS1="%B%F{green}%n@%m%k %B%F{blue}%~ %# %b%f%k"
+# fi
