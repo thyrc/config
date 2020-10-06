@@ -218,8 +218,8 @@ input * {
 input * xkb_numlock enable
 
 exec swayidle -w \
-    timeout 300 'swaylock -f -c 000000' \
-    timeout 600 'swaymsg "output * dpms off"' resume 'swaymsg "output * dpms on"'
+    timeout 600 'swaymsg "output * dpms off"' resume 'swaymsg "output * dpms on"' \
+    timeout 610 'swaylock -f -c 000000'
 
 bindsym --release Print exec --no-startup-id "zsh ~/bin/shot"
 bindsym --release Shift+Print exec --no-startup-id "zsh ~/bin/shot 5"
@@ -244,6 +244,7 @@ for_window [class="Sxiv"] floating enable
 for_window [class="Vlc"] floating enable
 for_window [class="qemu-system-x86_64"] floating enable
 for_window [class="xfreerdp"] floating enable
+for_window [class="Vncviewer"] floating enable
 
 for_window [app_id="mpv"] floating enable
 for_window [app_id="org.keepassxc.KeePassXC"] floating enable
