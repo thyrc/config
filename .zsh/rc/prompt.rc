@@ -13,17 +13,17 @@ function prompt_e0b0 {
 
 case $TERM in
     xterm*|Eterm*|aterm|kterm|gnome*|interix|konsole*)
-        PS1="%F{white}%K{blue}%n@%m %k%b%F{blue}%K{white}$(prompt_e0b0) %F{black}%~ %k%F{white}$(prompt_e0b0)%f "
+        PS1="%F{white}%K{blue}%n@%m %k%F{blue}%K{white}$(prompt_e0b0) %F{black}%~ %k%F{white}$(prompt_e0b0)%f "
         precmd () {print -Pn "\e]0;%n@%m: %~\a"}
         ;;
     screen*)
-        PS1="%F{white}%K{blue}%n@%m %k%b%F{blue}%K{white}$(prompt_e0b0) %F{black}%~ %k%F{white}$(prompt_e0b0)%f "
+        PS1="%F{white}%K{blue}%n@%m %k%F{blue}%K{white}$(prompt_e0b0) %F{black}%~ %k%F{white}$(prompt_e0b0)%f "
         ;;
     *)
-        PS1="%F{green}%n@%m%k %B%F{blue}%~ %# %b%f%k"
+        PS1="%F{green}%n@%m%k %F{blue}%~ %# %f%k"
         ;;
 esac
 
 if [[ -z "$SWAYSOCK" ]]; then
-    PS1="%F{green}%n@%m%k %B%F{blue}%~ %# %b%f%k"
+    PS1="%F{green}%n@%m%k %F{blue}%~ %# %f%k"
 fi
