@@ -1,0 +1,67 @@
+theme = "slick"
+# theme = "solarized-dark"
+
+[icons]
+name = "awesome5"
+[icons.overrides]
+# net_wired = ""
+net_wired = "\uf093"
+
+[[block]]
+block = "net"
+device = "eth0"
+format = "{ipv6} ({bitrate})"
+interval = 60
+
+[[block]]
+block = "custom"
+command = "[[ -e /proc/sys/net/ipv4/conf/tun0 ]] && tun0_ip=$(ip -json -family inet address show tun0 |jq -r '.[].addr_info[].local') && echo '{\"icon\":\"net_vpn\", \"state\":\"Good\", \"text\": \"VPN ('\"$tun0_ip\"')\"}' || echo '{\"icon\":\"net_vpn\", \"state\":\"Idle\", \"text\": \"no\"}'"
+json = true
+interval = 20
+
+[[block]]
+block = "disk_space"
+path = "/"
+format = "{icon} {available}"
+info_type = "available"
+unit = "GB"
+interval = 20
+warning = 20.0
+alert = 10.0
+
+# [[block]]
+# block = "net"
+# device = "eth0"
+# format = "{ip}"
+# interval = 5
+# use_bits = false
+
+[[block]]
+block = "memory"
+display_type = "memory"
+format_mem = "{mem_used_percents:0}"
+format_swap = "{swap_used_percents}"
+
+[[block]]
+block = "load"
+interval = 1
+format = "{1m}"
+
+[[block]]
+block = "temperature"
+collapsed = false
+interval = 10
+format = "{average}"
+chip = "k10temp-*"
+inputs = ["Tctl"]
+
+[[block]]
+block = "sound"
+step_width = 2
+on_click = "pactl set-sink-mute 1 toggle"
+show_volume_when_muted = true
+
+[[block]]
+block = "time"
+interval = 60
+format = "%a %d/%m %R"
