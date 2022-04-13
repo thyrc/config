@@ -46,9 +46,10 @@ autocmd FileType javascript setlocal omnifunc=javascriptcomplete#CompleteJS
 autocmd FileType python setlocal omnifunc=pythoncomplete#Complete
 autocmd FileType xml setlocal omnifunc=xmlcomplete#CompleteTags
 
-let g:mucomplete#enable_auto_at_startup = 1
+let g:mucomplete#enable_auto_at_startup = 0
 let g:mucomplete#completion_delay = 1
 set completeopt+=menuone
+set completeopt+=noselect
 set shortmess+=c
 
 " if executable('rls')

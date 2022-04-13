@@ -39,7 +39,7 @@ alert = 10.0
 [[block]]
 block = "memory"
 display_type = "memory"
-format_mem = "{mem_used_percents:0}"
+format_mem = "{mem_used_percents}"
 format_swap = "{swap_used_percents}"
 
 [[block]]
@@ -57,8 +57,9 @@ inputs = ["Tctl"]
 
 [[block]]
 block = "sound"
+driver = "alsa"
 step_width = 2
-on_click = "pactl set-sink-mute 1 toggle"
+on_click = "amixer sset Master toggle"
 show_volume_when_muted = true
 
 [[block]]

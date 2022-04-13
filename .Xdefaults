@@ -1,5 +1,5 @@
-URxvt.font: xft:Nimbus Mono:pixelsize=12
-URxvt.letterSpace: -1
+URxvt.font: xft:Iosevka Fixed:pixelsize=14
+URxvt.letterSpace: 0
 
 URxvt.background: #000000
 URxvt.foreground: #BBAAEE
