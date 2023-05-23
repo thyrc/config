@@ -7,3 +7,5 @@ alias grepr='grep -r --exclude-dir=.svn --exclude-dir=.git'
 alias nscp='scp -o "StrictHostKeyChecking=no" -o "UserKnownHostsFile=/dev/null" -o "LogLevel=QUIET"'
 alias nssh='ssh -o "StrictHostKeyChecking=no" -o "UserKnownHostsFile=/dev/null" -o "LogLevel=QUIET"'
 alias assh='ssh -o "Ciphers=blowfish-cbc" -o "MACs=hmac-sha1" -o "KexAlgorithms=diffie-hellman-group1-sha1" -l admin'
+
+alias nrsync='rsync -e '\''ssh -o "StrictHostKeyChecking=no" -o "UserKnownHostsFile=/dev/null" -o "LogLevel=QUIET"'\'''

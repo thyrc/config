@@ -48,6 +48,7 @@ autocmd FileType xml setlocal omnifunc=xmlcomplete#CompleteTags
 
 let g:mucomplete#enable_auto_at_startup = 0
 let g:mucomplete#completion_delay = 1
+let g:lsp_diagnostics_float_cursor = 1
 set completeopt+=menuone
 set completeopt+=noselect
 set shortmess+=c
