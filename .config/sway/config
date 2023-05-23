@@ -17,7 +17,7 @@ set $term alacritty
 # on the original workspace that the command was run on.
 #set $menu dmenu_path | dmenu | xargs swaymsg exec --
 
-# set $menu rofi -show run -modi run -location 1 -width 100 \
+#set $menu rofi -show run -modi run -location 1 -width 100 \
 #                  -lines 2 -line-margin 0 -line-padding 1 \
 #                  -separator-style none -font "Iosevka 10" -columns 9 -bw 0 \
 #                  -hide-scrollbar \
@@ -33,7 +33,7 @@ set $menu wofi --show run --yoffset 0 --width "100%" --lines 2 --columns 1 --gtk
 #
 # Default wallpaper (more resolutions are available in /usr/share/backgrounds/sway/)
 #output * bg /usr/share/backgrounds/sway/Sway_Wallpaper_Blue_1920x1080.png fill
-output * bg ~/Pictures/kaizen.jpg stretch
+output * bg ~/Pictures/kaizen.png stretch
 #
 # Example configuration:
 #
@@ -41,9 +41,9 @@ output * bg ~/Pictures/kaizen.jpg stretch
 #
 # You can get the names of your outputs by running: swaymsg -t get_outputs
 
-    # output DP-1 adaptive_sync on
-    output DP-1 scale_filter linear
-    output DP-1 resolution 3840x2160 scale 1.4
+output DP-3 resolution 1920x1200 position 1920,0 scale_filter linear
+output DP-4 resolution 1920x1200 position 0,0 scale_filter linear
+output DP-5 resolution 1920x1200 position 0,0 scale_filter linear
 
 ### Key bindings
 #
@@ -99,7 +99,7 @@ output * bg ~/Pictures/kaizen.jpg stretch
 # Workspaces:
 #
 
-    set $ws1 "1: www"
+    set $ws1 "1: home"
     set $ws2 "2: ssh"
     set $ws3 "3: shell"
     set $ws4 4
@@ -107,8 +107,8 @@ output * bg ~/Pictures/kaizen.jpg stretch
     set $ws6 6
     set $ws7 7
     set $ws8 "8: audio"
-    set $ws9 "9: jail"
-    set $ws10 "10: irc"
+    set $ws9 "9: www"
+    set $ws10 "10: jail"
 
     # Switch to workspace
     bindsym $mod+1 workspace number $ws1
@@ -223,13 +223,9 @@ bindsym Mod1+Shift+Left workspace prev
 
 bindsym Mod1+Tab focus up
 
-# bindsym XF86AudioRaiseVolume exec pactl set-sink-volume 1 +2% #increase sound volume
-# bindsym XF86AudioLowerVolume exec pactl set-sink-volume 1 -2% #decrease sound volume
-# bindsym XF86AudioMute exec pactl set-sink-mute 1 toggle # mute sound
-
-bindsym XF86AudioRaiseVolume exec amixer sset Master 1%+
-bindsym XF86AudioLowerVolume exec amixer sset Master 1%-
-bindsym XF86AudioMute exec amixer sset Master toggle
+bindsym XF86AudioRaiseVolume exec wpctl set-volume @DEFAULT_AUDIO_SINK@ 1%+
+bindsym XF86AudioLowerVolume wpctl set-volume @DEFAULT_AUDIO_SINK@ 1%-
+bindsym XF86AudioMute exec wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle
 
 input * {
     xkb_layout "us"
@@ -240,14 +236,20 @@ input * {
 input * xkb_numlock enable
 
 # exec swayidle -w \
-#     timeout 600 'swaymsg "output * dpms off"' resume 'swaymsg "output * dpms on"' \
+#     timeout 600 'swaymsg "output * power off"' resume 'swaymsg "output * power on"' \
 #     timeout 610 'swaylock -f -c 000000'
 
 exec swayidle -w \
     timeout 600 'swaylock -f -c 000000'
 
+# Screen sharing
+exec /usr/libexec/xdg-desktop-portal-wlr -r
+exec /usr/libexec/xdg-desktop-portal -r
+
 bindsym --release Print exec --no-startup-id "zsh ~/bin/shot"
 bindsym --release Shift+Print exec --no-startup-id "zsh ~/bin/shot 5"
+
+bindsym XF86Calculator exec gvim
 
 for_window [window_role="About"] floating enable
 for_window [window_role="File Operation Progress"] floating enable sticky
@@ -274,6 +276,9 @@ for_window [class="jetbrains-idea"] floating enable
 for_window [class="Cssh"] floating enable
 for_window [class="URxvt"] floating enable
 for_window [class="Gimp"] floating enable
+for_window [class="Gvim"] floating enable, border none
+for_window [class="scummvm"] floating enable
+for_window [class="explorer.exe"] floating enable, border none
 
 for_window [app_id="mpv"] floating enable, border none
 for_window [app_id="org.keepassxc.KeePassXC"] floating enable
@@ -281,21 +286,25 @@ for_window [app_id="spicy"] floating enable
 for_window [app_id="imv"] floating enable, resize set 800 600
 for_window [app_id="org.inkscape.Inkscape"] floating enable
 for_window [app_id="org.remmina.Remmina"] floating enable
+for_window [app_id="libreoffice-startcenter"] floating enable
+for_window [app_id="libreoffice-writer"] floating enable
+for_window [app_id="soffice"] floating enable
 
 for_window [instance="libreoffice"] floating enable
 for_window [instance="RAIL"] floating enable
 
 for_window [title="LINE"] floating enable
-for_window [title="Picture-in-Picture"] floating enable
-for_window [title="Bild-im-Bild"] floating enable
+for_window [title="Picture-in-Picture"] floating enable, border none
+for_window [title="Bild-im-Bild"] floating enable, border none
 for_window [title="FreeRDP"] floating enable
+for_window [title="Firefox — Sharing Indicator"] floating enable
 
-floating_maximum_size 1920 x 1080
+floating_maximum_size 1680 x 1024
 
 bindsym $mod+Ctrl+l exec swaylock -f -c 000000
 
 exec mako
 
-exec /usr/libexec/pipewire-launcher
+exec /usr/bin/gentoo-pipewire-launcher
 
 seat seat0 xcursor_theme Adwaita 24
