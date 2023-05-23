@@ -1,17 +1,19 @@
+# icons_format = "{icon} "
+
+[theme]
 theme = "slick"
 # theme = "solarized-dark"
 
 [icons]
-name = "awesome5"
+icons = "awesome5"
 [icons.overrides]
-# net_wired = ""
-net_wired = "\uf093"
+net_wired = "\uf0ac"
 
 [[block]]
-block = "net"
-device = "eth0"
-format = "{ipv6} ({bitrate})"
-interval = 60
+block = "custom"
+command = "[[ -e /proc/sys/net/ipv4/conf/eth0 ]] && eth0_ip=$(ip -json -family inet6 address show eth0 scope global |jq -r '.[].addr_info[0].local') && echo '{\"icon\":\"net_wired\", \"text\": \"'$eth0_ip' ('$(cat /sys/class/net/eth0/speed)'Mb/s)\"}' || echo '{\"icon\":\"net_wired\", \"state\":\"Idle\", \"text\": \"not connected\"}'"
+json = true
+interval = 1800
 
 [[block]]
 block = "custom"
@@ -21,48 +23,53 @@ interval = 20
 
 [[block]]
 block = "disk_space"
-path = "/"
-format = "{icon} {available}"
-info_type = "available"
-unit = "GB"
-interval = 20
-warning = 20.0
-alert = 10.0
-
-# [[block]]
-# block = "net"
-# device = "eth0"
-# format = "{ip}"
-# interval = 5
-# use_bits = false
 
 [[block]]
 block = "memory"
-display_type = "memory"
-format_mem = "{mem_used_percents}"
-format_swap = "{swap_used_percents}"
+format = " $icon $mem_used_percents.eng(w:2) "
+format_alt = " $icon $swap_used_percents.eng(w:2) "
 
 [[block]]
 block = "load"
 interval = 1
-format = "{1m}"
 
 [[block]]
 block = "temperature"
-collapsed = false
 interval = 10
-format = "{average}"
+format = " $icon $average|"
 chip = "k10temp-*"
 inputs = ["Tctl"]
 
 [[block]]
-block = "sound"
-driver = "alsa"
-step_width = 2
-on_click = "amixer sset Master toggle"
-show_volume_when_muted = true
+block = "temperature"
+interval = 10
+format = " $icon $average|"
+chip = "amdgpu-*"
+inputs = ["edge"]
+
+[[block]]
+block = "custom"
+format = " \uf028 $text.pango-str() "
+command = "wpctl get-volume @DEFAULT_AUDIO_SINK@ |awk '{ print $NF * 100 \"%\"}'"
+# cycle= ["wpctl set-mute @DEFAULT_AUDIO_SINK@ 0 && vol=$(wpctl get-volume @DEFAULT_AUDIO_SINK@ |awk '{ print $NF * 100 \"%\"}') && echo '{\"icon\": \"volume\", \"text\": \"'$vol'\"}'", "wpctl set-mute @DEFAULT_AUDIO_SINK@ 1 && echo '{\"icon\": \"headphones\", \"text\": \"\"}'"]
+# json = true
+[[block.click]]
+button = "up"
+cmd = "wpctl set-volume @DEFAULT_AUDIO_SINK@ 1%+"
+update = true
+[[block.click]]
+button = "down"
+cmd = "wpctl set-volume @DEFAULT_AUDIO_SINK@ 1%-"
+update = true
+[[block.click]]
+button = "left"
+cmd = "wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle"
+update = true
+# action = "cycle"
 
 [[block]]
 block = "time"
 interval = 60
-format = "%a %d/%m %R"
+[block.format]
+full = " $icon $timestamp.datetime(f:'%a %d.%m. %R')"
+short = " $icon $timestamp.datetime(f:'%R')"
