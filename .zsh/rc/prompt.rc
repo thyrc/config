@@ -1,29 +1,133 @@
-# for have colors
-autoload -U colors
-colors
+setopt prompt_subst
 
-# define your colors here (i hate white background)
-host_color="green" 
-path_color="blue"
-date_color="white"
+CURRENT_BG='NONE'
 
-function prompt_e0b0 {
-    echo -ne '\ue0b0'
-}
-
-case $TERM in
-    xterm*|Eterm*|aterm|kterm|gnome*|interix|konsole*)
-        PS1="%F{white}%K{blue}%n@%m %k%F{blue}%K{white}$(prompt_e0b0) %F{black}%~ %k%F{white}$(prompt_e0b0)%f "
-        precmd () {print -Pn "\e]0;%n@%m: %~\a"}
-        ;;
-    screen*)
-        PS1="%F{white}%K{blue}%n@%m %k%F{blue}%K{white}$(prompt_e0b0) %F{black}%~ %k%F{white}$(prompt_e0b0)%f "
-        ;;
-    *)
-        PS1="%F{green}%n@%m%k %F{blue}%~ %# %f%k"
-        ;;
+case ${SOLARIZED_THEME:-dark} in
+    light) CURRENT_FG='white';;
+    *)     CURRENT_FG='black';;
 esac
 
-if [[ -z "$SWAYSOCK" ]]; then
-    PS1="%F{green}%n@%m%k %F{blue}%~ %# %f%k"
-fi
+() {
+    local LC_ALL="" LC_CTYPE="en_US.UTF-8"
+    SEGMENT_SEPARATOR=$'\ue0b0'
+}
+
+# Begin a segment
+# Takes two arguments, background and foreground. Both can be omitted,
+# rendering default background/foreground.
+function prompt_start() {
+  local bg fg
+  [[ -n $1 ]] && bg="%K{$1}" || bg="%k"
+  [[ -n $2 ]] && fg="%F{$2}" || fg="%f"
+  if [[ $CURRENT_BG != 'NONE' && $1 != $CURRENT_BG ]]; then
+    echo -n "%{$bg%F{$CURRENT_BG}%}$SEGMENT_SEPARATOR%{$fg%}"
+  else
+    echo -n "%{$bg%}%{$fg%}"
+  fi
+  CURRENT_BG=$1
+  [[ -n $3 ]] && echo -n $3
+}
+
+function prompt_segment() {
+  local bg fg
+  [[ -n $1 ]] && bg="%K{$1}" || bg="%k"
+  [[ -n $2 ]] && fg="%F{$2}" || fg="%f"
+  if [[ $CURRENT_BG != 'NONE' && $1 != $CURRENT_BG ]]; then
+    echo -n " %{$bg%F{$CURRENT_BG}%}$SEGMENT_SEPARATOR%{$fg%} "
+  else
+    echo -n "%{$bg%}%{$fg%} "
+  fi
+  CURRENT_BG=$1
+  [[ -n $3 ]] && echo -n $3
+}
+
+# End the prompt, closing any open segments
+function prompt_end() {
+  if [[ -n $CURRENT_BG ]]; then
+    echo -n " %{%k%F{$CURRENT_BG}%}$SEGMENT_SEPARATOR"
+  else
+    echo -n "%{%k%}"
+  fi
+  echo -n "%{%f%}"
+  CURRENT_BG=''
+}
+
+### Prompt components
+# Each component will draw itself, and hide itself if no information needs to be shown
+
+# Context: user@hostname (who am I and where am I)
+function prompt_context() {
+  if [[ "$USERNAME" != "$DEFAULT_USER" || -n "$SSH_CLIENT" ]]; then
+    prompt_start black default "%(!.%{%F{yellow}%}.)%n@%m"
+  fi
+}
+
+# Dir: current working directory
+function prompt_dir() {
+  prompt_segment blue $CURRENT_FG '%~'
+}
+
+# Git: branch/detached head, dirty status
+function prompt_git() {
+  (( $+commands[git] )) || return
+  local PL_BRANCH_CHAR
+  () {
+    local LC_ALL="" LC_CTYPE="en_US.UTF-8"
+    PL_BRANCH_CHAR=$'\ue0a0' # 
+  }
+  local ref dirty mode repo_path
+
+   if [[ "$(command git rev-parse --is-inside-work-tree 2>/dev/null)" = "true" ]]; then
+    repo_path=$(command git rev-parse --git-dir 2>/dev/null)
+    # dirty=$(parse_git_dirty)
+    ref=$(command git symbolic-ref HEAD 2> /dev/null) || \
+    ref="◈ $(command git describe --exact-match --tags HEAD 2> /dev/null)" || \
+    ref="➦ $(command git rev-parse --short HEAD 2> /dev/null)"
+    if [[ -n $dirty ]]; then
+      prompt_segment yellow black
+    else
+      prompt_segment green $CURRENT_FG
+    fi
+
+    local ahead behind
+    ahead=$(command git log --oneline @{upstream}.. 2>/dev/null)
+    behind=$(command git log --oneline ..@{upstream} 2>/dev/null)
+    if [[ -n "$ahead" ]] && [[ -n "$behind" ]]; then
+      PL_BRANCH_CHAR=$'\u21c5'
+    elif [[ -n "$ahead" ]]; then
+      PL_BRANCH_CHAR=$'\u21b1'
+    elif [[ -n "$behind" ]]; then
+      PL_BRANCH_CHAR=$'\u21b0'
+    fi
+
+    if [[ -e "${repo_path}/BISECT_LOG" ]]; then
+      mode=" <B>"
+    elif [[ -e "${repo_path}/MERGE_HEAD" ]]; then
+      mode=" >M<"
+    elif [[ -e "${repo_path}/rebase" || -e "${repo_path}/rebase-apply" || -e "${repo_path}/rebase-merge" || -e "${repo_path}/../.dotest" ]]; then
+      mode=" >R>"
+    fi
+
+    autoload -Uz vcs_info
+
+    zstyle ':vcs_info:*' enable git
+    zstyle ':vcs_info:*' get-revision true
+    zstyle ':vcs_info:*' check-for-changes true
+    zstyle ':vcs_info:*' stagedstr '✚'
+    zstyle ':vcs_info:*' unstagedstr '±'
+    zstyle ':vcs_info:*' formats ' %u%c'
+    zstyle ':vcs_info:*' actionformats ' %u%c'
+    vcs_info
+    echo -n "${${ref:gs/%/%%}/refs\/heads\//$PL_BRANCH_CHAR }${vcs_info_msg_0_%% }${mode}"
+  fi
+}
+
+## Main prompt
+build_prompt() {
+  prompt_context
+  prompt_dir
+  prompt_git
+  prompt_end
+}
+
+PROMPT='%{%f%b%k%}$(build_prompt) '
