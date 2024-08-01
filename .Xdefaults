@@ -21,3 +21,5 @@ URxvt*scrollWithBuffer: true
 URxvt*scrollTtyKeypress: true
 
 URxvt*scrollBar: false
+
+Xcursor.size: 16
