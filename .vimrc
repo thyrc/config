@@ -1,3 +1,12 @@
+" https://github.com/vim-airline/vim-airline (app-vim/airline)
+" https://github.com/tpope/vim-fugitive/ (app-vim/fugitive)
+" https://github.com/vim-syntastic/syntastic/ (app-vim/syntastic)
+" https://github.com/rust-lang/rust.vim.git
+" https://github.com/prabirshrestha/asyncomplete.vim.git
+" https://github.com/prabirshrestha/asyncomplete-lsp.vim.git
+" https://github.com/prabirshrestha/vim-lsp.git
+" https://github.com/lifepillar/vim-mucomplete.git
+
 set incsearch
 set hlsearch
 
@@ -24,20 +33,24 @@ set pastetoggle=<F12>
 set nobackup
 set swapfile
 
-"" netrw
+set background=dark
+colorscheme solarized
+
+:set viminfo='50,<8096,s256,h
+set hidden
+
 " disable generation of .netrwhist
 let g:netrw_dirhistmax = 0
 " tree style listing
 let g:netrw_liststyle = 3
 
-"" split window
+" split window
 set splitright
 set splitbelow
 
 nmap <C-L> :nohl <bar> :syn clear Repeat<CR>
 
-set background=dark
-highlight LineNr term=bold cterm=NONE ctermfg=DarkGrey ctermbg=DarkBlue gui=NONE guifg=DarkGrey guibg=NONE
+" highlight LineNr term=bold cterm=NONE ctermfg=DarkGrey ctermbg=DarkBlue gui=NONE guifg=DarkGrey guibg=NONE
 
 " Enable omni completion.
 autocmd FileType css setlocal omnifunc=csscomplete#CompleteCSS
@@ -52,14 +65,6 @@ let g:lsp_diagnostics_float_cursor = 1
 set completeopt+=menuone
 set completeopt+=noselect
 set shortmess+=c
-
-" if executable('rls')
-"     au User lsp_setup call lsp#register_server({
-"         \ 'name': 'rls',
-"         \ 'cmd': {server_info->['rustup', 'run', 'nightly', 'rls']},
-"         \ 'whitelist': ['rust'],
-"         \ })
-" endif
 
 set statusline+=%#warningmsg#
 set statusline+=%{SyntasticStatuslineFlag()}
@@ -89,14 +94,6 @@ function! SyntasticToggle()
             let g:syntastic_perl_checkers = ['perl']
             SyntasticCheck
         endif
-    elseif &ft == 'rust'
-        if g:syntastic_rust_checkers == ['']
-            let g:syntastic_rust_checkers = ['rustc']
-            SyntasticCheck
-        else
-            let g:syntastic_rust_checkers = ['']
-            SyntasticReset
-        endif
     elseif &ft == 'c'
         if g:syntastic_c_checkers == ['']
             let g:syntastic_c_checkers = ['clang_check']
@@ -120,6 +117,12 @@ function! SyntasticToggle()
 endfunction
 
 let g:airline_powerline_fonts = 1
+let g:airline#extensions#branch#enabled=1
+
+let g:bufferline_echo = 0
+  autocmd VimEnter *
+    \ let &statusline='%{bufferline#refresh_status()}'
+    \ .bufferline#get_status_string()
 
 " Append modeline after last line in buffer.
 " Use substitute() instead of printf() to handle '%%s' modeline in LaTeX
@@ -153,9 +156,11 @@ endfunction
 
 command! -range=% HighlightRepeats <line1>,<line2>call HighlightRepeats()
 
-"" spell
+" spell check
 set sps=best,10
 let spelllangs = ["en", "de"]
+hi SpellBad cterm=underline
+noremap <silent><F7> :call SpellToggle()<CR>
 function! SpellToggle()
     if !exists('b:langidx') | let b:langidx = 0 | endif
     if b:langidx == len(g:spelllangs)
@@ -169,6 +174,75 @@ function! SpellToggle()
         let b:langidx = (b:langidx+1)
     endif
 endfunction
+
+" lsp
+" inoremap <C-j> <C-x><C-o>
+nmap <plug>() <Plug>(lsp-float-close)
+
+if executable('rust-analyzer')
+  au User lsp_setup call lsp#register_server({
+        \   'name': 'Rust Language Server',
+        \   'cmd': {server_info->['rust-analyzer']},
+        \   'root_uri':{server_info->lsp#utils#path_to_uri(
+        \       lsp#utils#find_nearest_parent_file_directory(
+        \           lsp#utils#get_buffer_path(),
+        \           ['Cargo.toml', '.git/']
+        \       ))},
+        \   'whitelist': ['rust'],
+        \   'initialization_options': {
+        \     'cargo': {
+        \       'buildScripts': {
+        \         'enable': v:true,
+        \       },
+        \     },
+        \     'procMacro': {
+        \       'enable': v:true,
+        \     },
+        \     'lens': {
+        \       'enable': v:false,
+        \     },
+        \   },
+        \ })
+endif
+
+if executable('clangd')
+  au User lsp_setup call lsp#register_server({
+        \   'name': 'clangd',
+        \   'cmd': {server_info->['clangd']},
+        \   'whitelist': ['c', 'cpp'],
+        \   'initialization_options': {},
+        \   })
+  let g:lsp_diagnostics_virtual_text_enabled = 0
+endif
+
+function! s:on_lsp_buffer_enabled() abort
+    setlocal omnifunc=lsp#complete
+    setlocal signcolumn=yes
+    if exists('+tagfunc') | setlocal tagfunc=lsp#tagfunc | endif
+    nmap <buffer> gd <plug>(lsp-definition)
+    nmap <buffer> gs <plug>(lsp-document-symbol-search)
+    nmap <buffer> gS <plug>(lsp-workspace-symbol-search)
+    nmap <buffer> gr <plug>(lsp-references)
+    nmap <buffer> gi <plug>(lsp-implementation)
+    nmap <buffer> gt <plug>(lsp-type-definition)
+    nmap <buffer> <leader>rn <plug>(lsp-rename)
+    nmap <buffer> [g <Plug>(lsp-previous-diagnostic)
+    nmap <buffer> ]g <Plug>(lsp-next-diagnostic)
+    nmap <buffer> K <plug>(lsp-hover)
+
+    let g:lsp_format_sync_timeout = 1000
+    autocmd! BufWritePre *.rs,*.go call execute('LspDocumentFormatSync')
+
+    nnoremap <buffer> <expr><c-f> lsp#scroll(+4)
+    nnoremap <buffer> <expr><c-d> lsp#scroll(-4)
+    " refer to doc to add more commands
+endfunction
+
+augroup lsp_install
+    au!
+    " call s:on_lsp_buffer_enabled only for languages that has the server registered.
+    autocmd User lsp_buffer_enabled call s:on_lsp_buffer_enabled()
+augroup END
 
 if filereadable(expand("~/.vim/vimrc.local"))
     source ~/.vim/vimrc.local
