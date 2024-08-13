@@ -137,6 +137,7 @@ build_prompt() {
 case $TERM in
   xterm*|Eterm*|aterm|kterm|gnome*|interix|konsole*|alacritty|screen*)
     PROMPT='%{%f%b%k%}$(build_prompt) '
+    precmd () {print -Pn "\e]0;%n@%m: %~\a"}
     ;;
   *)
     PROMPT="%F{green}%n@%m%k %F{blue}%~ %# %f%k"
