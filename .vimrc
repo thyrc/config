@@ -119,10 +119,17 @@ endfunction
 let g:airline_powerline_fonts = 1
 let g:airline#extensions#branch#enabled=1
 
-let g:bufferline_echo = 0
-  autocmd VimEnter *
-    \ let &statusline='%{bufferline#refresh_status()}'
-    \ .bufferline#get_status_string()
+let g:airline#extensions#tabline#enabled = 1
+let g:airline#extensions#tabline#show_buffers = 1
+let g:airline#extensions#tabline#show_splits = 0
+let g:airline#extensions#tabline#show_tabs = 1
+let g:airline#extensions#tabline#show_tab_nr = 0
+let g:airline#extensions#tabline#show_tab_type = 0
+
+" let g:bufferline_echo = 0
+"   autocmd VimEnter *
+"     \ let &statusline='%{bufferline#refresh_status()}'
+"     \ .bufferline#get_status_string()
 
 " Append modeline after last line in buffer.
 " Use substitute() instead of printf() to handle '%%s' modeline in LaTeX
